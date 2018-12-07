@@ -23,10 +23,15 @@ class MyWindow(Gtk.Window):
 
     bs = 0 #buffer starter
 
-    separator = "#####" #separates files and textarea field
-
-    sl = len(separator) #length of separator
+    separator_char = '%' #separates files and textarea field
+    sl = 15 #separator_length (and precision - the more, the more precise)
     su = 0 #how many times was separator used (depends on number of files)
+
+    separator = separator_char * sl #sequence
+
+    punctionals = "!\"$%&'#()*+,-./:;<=>?@[\]^_`{|}~".replace(separator_char, '') #separator must not be interpreted as punctional
+
+    #print(punctionals)
 
     def __init__(self):
         
@@ -52,6 +57,7 @@ class MyWindow(Gtk.Window):
         self.fbutton5 = Gtk.FileChooserButton()
         self.fbutton6 = Gtk.FileChooserButton()
 
+        #filechooser grid
         filechooser_grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True)
 
         filechooser_grid.attach(self.fbutton1,0,0,1,1)
@@ -68,6 +74,7 @@ class MyWindow(Gtk.Window):
 
         grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True)
 
+        #main grid
         grid.attach(headline, 0, 0, 5, 1)
         grid.attach(textview_label, 0, 1, 5, 1)
         grid.attach(textview_scroll, 0, 2, 5, 5)
@@ -82,9 +89,9 @@ class MyWindow(Gtk.Window):
         self.textview.get_buffer()
 
 
-    def get_buff (self, widget):
+    def get_str_from_textview (self):
         
-        buffer = widget.get_buffer()
+        buffer = self.textview.get_buffer()
 
         return buffer.get_slice(buffer.get_start_iter(), buffer.get_end_iter(), True)
 
@@ -119,7 +126,7 @@ class MyWindow(Gtk.Window):
 
     def is_punct (self, char):
 
-        for c in "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~":
+        for c in self.punctionals:
             if (c == char):
                 return True
 
@@ -149,9 +156,11 @@ class MyWindow(Gtk.Window):
 
                 self.ct = 's'
 
-            elif (c == '#'): #file and textarea separator detection
+            elif (c == self.separator_char): #file and textarea separator detection
             
                 self.ct = 'm'
+
+            #print(self.ct)
 
             #print("cc:\t{}bs:\t{}".format(c, self.bs))
 
@@ -159,12 +168,11 @@ class MyWindow(Gtk.Window):
 
                 self.bs += 1
 
-            if (self.bs == 5):
+            if (self.bs == self.sl):
 
                 #print("=======================================")
                 self.apply_buffer()
                 self.bs = 0
-
 
             elif (self.ct != 'm'):
                 #print("-------")
@@ -271,10 +279,7 @@ class MyWindow(Gtk.Window):
 
     def counter (self, widget):
 
-        text_area_text = self.get_buff(self.textview)
-        files_text = self.get_str_from_buttons()
-
-        text = text_area_text + self.separator + files_text
+        text = self.separator.join([self.get_str_from_textview(), self.get_str_from_buttons()])
 
         #print(text)
 
