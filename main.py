@@ -109,12 +109,14 @@ class MyWindow(Gtk.Window):
 
                 string_array.append(open(file_name, 'r').read())
 
-        #if (len(string_array) > 1):
+        
             #self.cc -= self.sl * (len(string_array) - 1)
             #print(len(string_array))
             #print(self.sl * (len(string_array) - 1))
 
-        self.su += len(string_array) - 1
+        if (len(string_array) > 1):
+
+            self.su += len(string_array) - 1
 
         #print(sl * self.len(string_array))
 
@@ -279,11 +281,13 @@ class MyWindow(Gtk.Window):
 
     def counter (self, widget):
 
-        text = self.separator.join([self.get_str_from_textview(), self.get_str_from_buttons()])
+        text = self.get_str_from_textview() + self.separator + self.get_str_from_buttons()
+
+        self.su += 1
 
         #print(text)
 
-        self.su += 1
+        #print(self.su)
 
         self.cc -= self.su * self.sl
 
@@ -352,7 +356,6 @@ class MyWindow(Gtk.Window):
             box = self.get_content_area()
             box.add(grid)
             self.show_all()
-
 
 
 win = MyWindow()
